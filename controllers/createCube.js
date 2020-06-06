@@ -5,5 +5,4 @@
 // const newCube2 = new Cube('Default 2', 'This is a default 2 cube', 'https://images-na.ssl-images-amazon.com/images/I/61izOzq%2BBAL._SY355_.jpg', 4);
 // const newCube3 = new Cube('Default 3', 'This is a default 3 cube', 'https://images-na.ssl-images-amazon.com/images/I/61HpQqVQ37L._SY355_.jpg', 10);
 
-
 // newCube3.save();
