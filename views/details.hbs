@@ -2,6 +2,20 @@
 <img class="cube" src="{{cube.imageUrl}}">
 <div class="details">
   <p><span>Description:</span>{{cube.description}}</p>
-  <p><span>Difficulty level:</span> {{cube.difficulty}}</p>
+  <p><span>Difficulty level:</span>{{cube.difficulty}}</p>
   <a class="btn" href="/">Back</a>
+  <a class="btn" href="/attach/accessory/{{cube._id}}">Attach Accessory</a>
+
+</div>
+<h2>Accessories</h2>
+<div class="accessories">
+  {{#each cube.accessories}}
+  <div class="accessory">
+    <img src="{{this.imageUrl}}" alt="stickerName">
+    <h3>{{this.name}}</h3>
+    <p>{{this.description}}</p>
+  </div>
+  {{else}}
+  <h3 class="italic">This cube has no accessories yet...</h3>
+  {{/each}}
 </div>
