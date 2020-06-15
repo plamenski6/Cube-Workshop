@@ -18,7 +18,7 @@ const AccessorySchema = new mongoose.Schema({
         type: 'ObjectId',
         ref: 'Cube'
     }]
-})
+});
 
 AccessorySchema.path('imageUrl').validate(function(url) {
     return url.startsWith('http://') || url.startsWith('https://');
