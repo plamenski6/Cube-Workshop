@@ -2,14 +2,16 @@ const express = require('express');
 const { getCube, updateCube } = require('../controllers/cubes');
 const { getAccessories } = require('../controllers/accessories');
 const router = express.Router();
+const { checkAuth, getUserStatus } = require('../controllers/user');
 
-router.get('/create/accessory', (req, res) => {
+router.get('/create/accessory', checkAuth, getUserStatus, (req, res) => {
     res.render('createAccessory', {
-        title: 'Create accessory'
+        title: 'Create accessory',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.post('/create/accessory', async(req, res) => {
+router.post('/create/accessory', checkAuth, async(req, res) => {
     const{
         name, 
         description,
@@ -26,7 +28,7 @@ router.post('/create/accessory', async(req, res) => {
     res.redirect('/create/accessory');
 });
 
-router.get('/attach/accessory/:id', async(req, res) => {
+router.get('/attach/accessory/:id', checkAuth, getUserStatus, async(req, res) => {
     const cube = await getCube(req.params.id);
     const accessories = await getAccessories();
 
@@ -41,11 +43,12 @@ router.get('/attach/accessory/:id', async(req, res) => {
         title: 'Attach accessory',
         cube,
         accessories: notAttachedAccessories,
-        canNotAttached: accessories.length === 0 || cube.accessories.length === accessories.length
+        canNotAttached: accessories.length === 0 || cube.accessories.length === accessories.length,
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.post('/attach/accessory/:id', async(req, res) => {
+router.post('/attach/accessory/:id', checkAuth, async(req, res) => {
     const {
         accessory
     } = req.body;

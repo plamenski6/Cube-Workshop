@@ -1,28 +1,36 @@
 const { Router } = require('express');
 const { getAllCubes } = require('../controllers/cubes');
-const Cube = require('../models/cube');
-const Accessory = require('../models/accessory');
+const { getUserStatus } = require('../controllers/user');
 
 const router = new Router();
 
-router.get('/', async (req, res) => {
+router.get('/', getUserStatus, async (req, res) => {
     const cubes = await getAllCubes();
 
     res.render('index', {
         title: 'Cube Workshop',
-        cubes
+        cubes,
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.get('/about', (req, res) => {
+router.get('/about', getUserStatus, (req, res) => {
     res.render('about', {
-        title: 'About Page'
+        title: 'About Page',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.get('*', (req, res) => {
+router.get('/logout', (req, res) => {
+    res.clearCookie('aId');
+
+    res.redirect('/');
+});
+
+router.get('*', getUserStatus, (req, res) => {
     res.render('404', {
-        title: 'Error'
+        title: 'Error',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
