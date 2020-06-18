@@ -22,21 +22,28 @@ const saveUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = new User({
-        username,
-        password: hashedPassword
-    });
+    try {
+        const user = new User({
+            username,
+            password: hashedPassword
+        });
 
-    const userObject = await user.save();
+        const userObject = await user.save();
 
-    const token = generateToken({
-        userId: userObject._id,
-        username: userObject.username
-    });
+        const token = generateToken({
+            userId: userObject._id,
+            username: userObject.username
+        });
 
-    res.cookie('aId', token);
+        res.cookie('aId', token);
 
-    return true;
+        return token;
+    } catch (err) {
+        return {
+            error: true,
+            message: err
+        }
+    }
 }
 
 const verifyUser = async (req, res) => {
@@ -46,22 +53,38 @@ const verifyUser = async (req, res) => {
         password
     } = req.body;
 
-    //get User by username
+    try {
+        const user = await User.findOne({ username });
 
-    const user = await User.findOne({ username });
+        if (!user) {
+            return {
+                error: true,
+                message: 'There is no such user'
+            }
+        }
 
-    const status = await bcrypt.compare(password, user.password);
+        const status = await bcrypt.compare(password, user.password);
 
-    if (status) {
-        const token = generateToken({
-            userId: user._id,
-            username: user.username
-        });
+        if (status) {
+            const token = generateToken({
+                userId: user._id,
+                username: user.username
+            });
 
-        res.cookie('aId', token);
+            res.cookie('aId', token);
+        }
+
+        return {
+            error: !status,
+            message: status || 'Wrong password'
+        }
+    } catch (err) {
+        return {
+            error: true,
+            message: 'There is no such user',
+            status
+        }
     }
-
-    return status;
 }
 
 const checkAuth = (req, res, next) => {

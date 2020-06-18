@@ -29,7 +29,7 @@ router.get('/create', checkAuth, getUserStatus, (req, res) => {
     });
 });
 
-router.post('/create', checkAuth, (req, res) => {
+router.post('/create', checkAuth, async (req, res) => {
 
     const {
         name,
@@ -41,16 +41,23 @@ router.post('/create', checkAuth, (req, res) => {
     const token = req.cookies['aId'];
     const decodedObject = jwt.verify(token, config.privateKey);
 
-    const cube = new Cube({ name, description, imageUrl, difficulty: difficultyLevel, creatorId: decodedObject.userId });
-
-    cube.save((err) => {
-        if (err) {
-            console.error(err);
-            res.redirect('/create');
-        } else {
-            res.redirect('/');
-        }
+    const cube = new Cube({
+        name: name.trim(),
+        description: description.trim(),
+        imageUrl,
+        difficulty: difficultyLevel,
+        creatorId: decodedObject.userId
     });
+
+    try {
+        await cube.save();
+        return res.redirect('/');
+    } catch (err) {
+        return res.render('create', {
+            title: 'Create Page',
+            error: 'Cube details are not valid'
+        });
+    }
 });
 
 router.get('/details/:id', getUserStatus, async (req, res) => {

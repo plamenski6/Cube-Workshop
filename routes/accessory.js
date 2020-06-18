@@ -2,6 +2,7 @@ const express = require('express');
 const { getCube, updateCube } = require('../controllers/cubes');
 const { getAccessories } = require('../controllers/accessories');
 const router = express.Router();
+const Accessory = require('../models/accessory');
 const { checkAuth, getUserStatus } = require('../controllers/user');
 
 router.get('/create/accessory', checkAuth, getUserStatus, (req, res) => {
@@ -11,9 +12,9 @@ router.get('/create/accessory', checkAuth, getUserStatus, (req, res) => {
     });
 });
 
-router.post('/create/accessory', checkAuth, async(req, res) => {
-    const{
-        name, 
+router.post('/create/accessory', checkAuth, async (req, res) => {
+    const {
+        name,
         description,
         imageUrl
     } = req.body;
@@ -24,11 +25,18 @@ router.post('/create/accessory', checkAuth, async(req, res) => {
         imageUrl
     });
 
-    await accessory.save();
-    res.redirect('/create/accessory');
+    try {
+        await accessory.save();
+        return res.redirect('/');
+    } catch (err) {
+        return res.render('createAccessory', {
+            title: 'Create accessory',
+            error: 'Accessory details are not valid'
+        });
+    }
 });
 
-router.get('/attach/accessory/:id', checkAuth, getUserStatus, async(req, res) => {
+router.get('/attach/accessory/:id', checkAuth, getUserStatus, async (req, res) => {
     const cube = await getCube(req.params.id);
     const accessories = await getAccessories();
 
@@ -48,7 +56,7 @@ router.get('/attach/accessory/:id', checkAuth, getUserStatus, async(req, res) =>
     });
 });
 
-router.post('/attach/accessory/:id', checkAuth, async(req, res) => {
+router.post('/attach/accessory/:id', checkAuth, async (req, res) => {
     const {
         accessory
     } = req.body;

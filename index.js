@@ -7,7 +7,6 @@ const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
 const cubeRouter = require('./routes/cube');
 const accessoryRouter = require('./routes/accessory');
-const accessory = require('./models/accessory');
 const app = express();
 
 mongoose.connect(config.databaseURL,
